@@ -7,6 +7,7 @@
 #define BOARD_SIZE 14
 const int BANK1 = BOARD_SIZE/2-1;
 const int BANK2 = BOARD_SIZE-1;
+const int MINIMAX_DEPTH = 15;
 
 typedef struct {
   int move;
@@ -260,7 +261,7 @@ int main() {
         }
       }
     } else {
-      minimax_result result = minimax(board, 15, &player, -1, -1000, 1000);
+      minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
       move = result.move;
       printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
     }
