@@ -2,15 +2,23 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define BOARD_SIZE 14
 const int BANK1 = BOARD_SIZE/2-1;
 const int BANK2 = BOARD_SIZE-1;
 
+typedef struct {
+  int move;
+  int evaluation;
+} minimax_result;
+
 enum GameType {
   THREE = 3,
   FOUR
 };
+
+minimax_result minimax(int *board, int depth, int *player, int move, int alpha, int beta);
 
 void   board_print(int *board);
 void   board_reset(int *board, enum GameType n_of_stones);
@@ -18,6 +26,7 @@ int    board_evaluate(int *board);
 bool   game_over(int *board);
 bool   board_move(int *board, int hole, int *player);
 void   next_player(int *player);
+bool   board_legal_move(int *board, int hole, int player);
 
 void board_print(int *board) {
   for (int i = BANK2; i > BANK1; --i) {
@@ -28,9 +37,6 @@ void board_print(int *board) {
   for (int i = 0; i <= BANK1; ++i) {
     printf("%3d", board[i]);
   }
-  // for (int i = 0; i < BOARD_SIZE; ++i) {
-  //   printf("%d ", board[i]);
-  // }
   printf("\n");
 }
 
@@ -78,16 +84,11 @@ bool game_over(int *board) {
 }
 
 bool board_move(int *board, int hole, int *player) {
-  // printf("player %d played hole %d\n", *player, hole);
-  // printf("hole %d has %d stones\n", hole, board[hole]);
-  // hole must have stones
   if (board[hole] == 0) {
-    // printf("hole %d was empty\n", hole);
     return false;
   }
   // boundary checks
   if (hole >= BANK2) {
-    // printf("hole %d was > BANK2\n", hole);
     return false;
   }
   if (*player == 1) {
@@ -134,7 +135,6 @@ bool board_move(int *board, int hole, int *player) {
   }
 
   if (!player_retains_turn) {
-    // printf("not retaining turn. player is now %d\n", *player);
     next_player(player);
   }
 
@@ -143,6 +143,89 @@ bool board_move(int *board, int hole, int *player) {
 
 void next_player(int *player) {
   *player = *player == 1 ? 2 : 1;
+}
+
+bool board_legal_move(int *board, int hole, int player) {
+  if (board[hole] == 0) {
+    return false;
+  }
+  if (player == 1) {
+    return (hole < BANK1 && hole >= 0);
+  }
+  if (player == 2) {
+    return (hole > BANK1 && hole < BANK2);
+  }
+}
+
+
+minimax_result minimax(int *board, int depth, int *player, int move, int alpha, int beta) {
+    if (game_over(board) || depth == 0) {
+        minimax_result result;
+        result.move = move;
+        result.evaluation = board_evaluate(board);
+        return result;
+    }
+
+    if (*player == 1) {
+        int max_result = -1000;
+        int best_move = -1;
+        minimax_result result;
+        result.move = move;
+        result.evaluation = max_result;
+        for (int test_move = 0; test_move < BANK1; ++test_move) {
+            int test_board[BOARD_SIZE];
+            memcpy(test_board, board, BOARD_SIZE * sizeof(board[0]));
+
+            if (board_legal_move(test_board, test_move, 1)) {
+                int temp_player = *player;
+                board_move(test_board, test_move, &temp_player);
+
+                result = minimax(test_board, depth - 1, &temp_player, test_move, alpha, beta);
+
+                if (result.evaluation > max_result) {
+                    result.move = test_move;
+                    best_move = test_move;
+                    max_result = result.evaluation;
+                    alpha = max_result;
+                    if (alpha > beta) break;
+                }
+            }
+        }
+        result.move = best_move;
+        result.evaluation = max_result;
+        return result;
+    }
+
+    if (*player == 2) {
+        int min_result = 1000;
+        int best_move = -1;
+        minimax_result result;
+        result.move = move;
+        result.evaluation = min_result;
+
+        for (int test_move = BANK1 + 1; test_move < BANK2; ++test_move) {
+            int test_board[BOARD_SIZE];
+            memcpy(test_board, board, BOARD_SIZE * sizeof(board[0]));
+
+            if (board_legal_move(test_board, test_move, 2)) {
+                int temp_player = *player;
+                board_move(test_board, test_move, &temp_player);
+
+                result = minimax(test_board, depth - 1, &temp_player, test_move, alpha, beta);
+
+                if (result.evaluation < min_result) {
+                    result.move = test_move;
+                    min_result = result.evaluation;
+                    best_move = test_move;
+                    beta = min_result;
+                    if (alpha > beta) break;
+                }
+            }
+        }
+        result.move = best_move;
+        result.evaluation = min_result;
+        return result;
+    }
 }
 
 
@@ -160,15 +243,28 @@ int main() {
 
   system("clear");
   printf("LET'S PLAY A GAME OF MANCALA\n");
-  board_reset(board, 3);
-  int move;
+  board_reset(board, 4);
+  int move = -1;
 
   while(!game_over(board)) {
     board_print(board);
-    printf("PLAYER %d, what is your move?\n", player);
-    scanf("%d", &move);
+
+    if (player == 1) {
+      printf("PLAYER %d, what is your move?\n", player);
+      char line[1024];
+      while (fgets(line, sizeof(line), stdin)) {
+        if (sscanf(line, "%i", &move)) {
+          if (board_legal_move(board, move, player)) {
+            break;
+          }
+        }
+      }
+    } else {
+      minimax_result result = minimax(board, 15, &player, -1, -1000, 1000);
+      move = result.move;
+      printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
+    }
     board_move(board, move, &player);
-    system("clear");
   }
 
   printf("GAME OVER\n");
