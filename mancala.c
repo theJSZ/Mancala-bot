@@ -18,15 +18,41 @@ int main() {
   */
   int board[BOARD_SIZE];
   int player = 1;
+  int total_moves = 0;
 
   printf("LET'S PLAY A GAME OF MANCALA\n");
-  board_reset(board, 4);
+  printf("Start with 3 or 4 stones per hole?\n");
+
+  int game_type;
+  char line[1024];
+      while (fgets(line, sizeof(line), stdin)) {
+        if (sscanf(line, "%i", &game_type)) {
+          if (game_type == 3 || game_type == 4) {
+              board_reset(board, game_type);
+              break;
+          }
+        }
+      }
   int move = -1;
 
   while(!game_over(board)) {
     board_print(board);
     printf("Player %d is thinking\n", player);
     if (player == 1) {
+      printf("PLAYER %d, enter move (1 to 6)\n", player);
+      char line[1024];
+      while (fgets(line, sizeof(line), stdin)) {
+        if (sscanf(line, "%i", &move)) {
+          move--;
+          if (board_legal_move(board, move, player)) {
+            break;
+          }
+        }
+      }
+      // minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
+      // move = result.move;
+      // printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
+    } else {
       // printf("PLAYER %d, what is your move?\n", player);
       // char line[1024];
       // while (fgets(line, sizeof(line), stdin)) {
@@ -39,17 +65,14 @@ int main() {
       minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
       move = result.move;
       printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
-    } else {
-      minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
-      move = result.move;
-      printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
     }
     board_move(board, move, &player, false);
-    // if (board_count_stones(board) != 48) break;
+    total_moves++;
   }
 
   printf("GAME OVER\n");
   board_print(board);
   printf("Final score: %d\n", board_evaluate_naive(board));
+  printf("Took %d total moves\n", total_moves);
 
 }
