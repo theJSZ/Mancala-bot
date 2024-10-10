@@ -135,8 +135,7 @@ bool board_legal_move(int *board, int hole, int player) {
   }
   if (player == 1) {
     return (hole < BANK1 && hole >= 0);
-  }
-  if (player == 2) {
+  } else {
     return (hole > BANK1 && hole < BANK2);
   }
 }

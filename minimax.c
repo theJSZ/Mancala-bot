@@ -1,6 +1,7 @@
 #include "minimax.h"
 
 minimax_result minimax(int *board, int depth, int *player, int move, int alpha, int beta) {
+    // printf("%d %d\n", alpha, beta);
     if (game_over(board) || depth == 0) {
         minimax_result result;
         result.move = move;
@@ -36,15 +37,13 @@ minimax_result minimax(int *board, int depth, int *player, int move, int alpha, 
         result.move = best_move;
         result.evaluation = max_result;
         return result;
-    }
-
-    if (*player == 2) {
+    } else {
         int min_result = 1000;
         int best_move = -1;
         minimax_result result;
         result.evaluation = min_result;
 
-        for (int test_move = BANK1+1; test_move > BANK1; --test_move) {
+        for (int test_move = BANK2-1; test_move > BANK1; --test_move) {
             int test_board[BOARD_SIZE];
             memcpy(test_board, board, BOARD_SIZE * sizeof(board[0]));
 

@@ -19,7 +19,6 @@ int main() {
   int board[BOARD_SIZE];
   int player = 1;
 
-  system("clear");
   printf("LET'S PLAY A GAME OF MANCALA\n");
   board_reset(board, 4);
   int move = -1;
@@ -46,7 +45,7 @@ int main() {
       printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
     }
     board_move(board, move, &player, false);
-    if (board_count_stones(board) != 48) break;
+    // if (board_count_stones(board) != 48) break;
   }
 
   printf("GAME OVER\n");
