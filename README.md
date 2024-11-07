@@ -12,5 +12,5 @@ Rules of mancala:
   - Take all stones from one of their own holes
   - Advance around the board counter-clockwise, depositing those stones one at a time into holes and the player's own bank. A player never deposits into the opponent's bank.
   - If the player deposits the last stone into their own bank, they immediately get to take another turn.
-  - If the player deposits the last stone into one of their holes that was empty, they immediately collect that stone and all stones that are in the directly opposing hole on the opponent's side, and place these stones into their bank.
+  - If the player deposits the last stone into one of their holes that was empty *and* there is at least one stone in the hole directly opposite, they immediately place all these stones into their bank.
 - When the game ends, each player's score is the total number of stones in their holes and bank combined.
