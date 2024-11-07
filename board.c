@@ -1,6 +1,9 @@
 #include "board.h"
 
 void board_print(int *board) {
+  for (int i = 0; i < 5; ++i) {
+    printf("\n");
+  }
   for (int i = BANK2; i > BANK1; --i) {
     printf("%3d", board[i]);
   }
@@ -67,19 +70,8 @@ bool game_over(int *board) {
 
 bool board_move(int *board, int hole, int *player, bool verbose) {
   if (verbose) printf("player %d played from hole %d\n", *player, hole);
-  if (board[hole] == 0) {
-    return false;
-  }
-  // boundary checks
-  if (hole >= BANK2) {
-    return false;
-  }
-  if (*player == 1) {
-    if (hole >= BANK1) return false;
-  }
-  if (*player == 2) {
-    if (hole <= BANK1) return false;
-  }
+
+  if (!board_legal_move(board, hole, *player)) return false;
 
   // legal move, take stones from hole
   int stones_left_to_place = board[hole];

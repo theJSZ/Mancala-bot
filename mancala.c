@@ -33,6 +33,17 @@ int main() {
           }
         }
       }
+
+  printf("Desired minimax search depth?\n(1 = very easy ... 20 = impossible)\n");
+
+  int minimax_depth;
+      while (fgets(line, sizeof(line), stdin)) {
+        if (sscanf(line, "%i", &minimax_depth)) {
+          if (minimax_depth >= 1 && minimax_depth <= 20) {
+              break;
+          }
+        }
+      }
   int move = -1;
 
   while(!game_over(board)) {
@@ -40,7 +51,6 @@ int main() {
     printf("Player %d is thinking\n", player);
     if (player == 1) {
       printf("PLAYER %d, enter move (1 to 6)\n", player);
-      char line[1024];
       while (fgets(line, sizeof(line), stdin)) {
         if (sscanf(line, "%i", &move)) {
           move--;
@@ -49,20 +59,8 @@ int main() {
           }
         }
       }
-      // minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
-      // move = result.move;
-      // printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
     } else {
-      // printf("PLAYER %d, what is your move?\n", player);
-      // char line[1024];
-      // while (fgets(line, sizeof(line), stdin)) {
-      //   if (sscanf(line, "%i", &move)) {
-      //     if (board_legal_move(board, move, player)) {
-      //       break;
-      //     }
-      //   }
-      // }
-      minimax_result result = minimax(board, MINIMAX_DEPTH, &player, -1, -1000, 1000);
+      minimax_result result = minimax(board, minimax_depth, &player, -1, -1000, 1000);
       move = result.move;
       printf("Player %d plays %d with an evaluation of %d\n", player, move, result.evaluation);
     }

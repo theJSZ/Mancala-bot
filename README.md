@@ -1,9 +1,5 @@
-# C program that plays Mancala
+# A program that plays Mancala
 
-Player 1 (the human player) has legal moves 0 to 5. The computer player uses minimax with a-b pruning. The evaluation function is very naive, it just counts the stones on both sides. Maybe with a more sophisticated evaluation, the program would play better even at less deep minimax calls?
+This is a simple mancala "bot" that runs in the console. The program determines the best move using minimax with a-b pruning. Minimax search depth is determined by user input at the start and can be set from 1 to 20 ply.
 
 Rules of mancala [here](https://www.scholastic.com/content/dam/teachers/blogs/alycia-zimmerman/migrated-files/mancala_rules.pdf)
-
-*TODO:*
-- Selectable evaluation functions and minimax depth for computer player
-- 

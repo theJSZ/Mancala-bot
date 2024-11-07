@@ -10,7 +10,7 @@ minimax_result minimax(int *board, int depth, int *player, int move, int alpha, 
         return result;
     }
 
-    if (*player == 1) {
+    if (*player == 1) {  // maximizing
         int max_result = -1000;
         int best_move = -1;
         minimax_result result;
@@ -37,7 +37,8 @@ minimax_result minimax(int *board, int depth, int *player, int move, int alpha, 
         result.move = best_move;
         result.evaluation = max_result;
         return result;
-    } else {
+
+    } else {  // minimizing
         int min_result = 1000;
         int best_move = -1;
         minimax_result result;
